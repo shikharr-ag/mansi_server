@@ -30,6 +30,8 @@ Future<Response> onRequest(RequestContext context) async {
       final valueMap = body['value'] as Map<String, dynamic>? ?? {};
       final contacts = valueMap['contacts'] as List? ?? [];
 
+      log('Body of the request: $body');
+
       String nameOfSender = '';
       if (contacts.isNotEmpty) {
         final profileDetails =
@@ -43,8 +45,8 @@ Future<Response> onRequest(RequestContext context) async {
         messageFrom = (messages.first['from'] ?? 'NA').toString();
         messageBody = (messages.first['text']['body'] ?? 'NA').toString();
       }
-      String responseText = await replyToUser(nameOfSender, messageBody);
-      return Response(body: '$responseText => $nameOfSender');
+      // String responseText = await replyToUser(nameOfSender, messageBody);
+      return Response(body: 'Sending $body to Mansi');
     default:
       return Response(body: 'Invalid Method');
   }
