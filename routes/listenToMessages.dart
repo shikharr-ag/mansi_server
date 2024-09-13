@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:dart_frog_request_logger/dart_frog_request_logger.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:dart_frog/dart_frog.dart';
@@ -29,8 +30,9 @@ Future<Response> onRequest(RequestContext context) async {
       final body = jsonDecode(await request.body()) as Map<String, dynamic>;
       final valueMap = body['value'] as Map<String, dynamic>? ?? {};
       final contacts = valueMap['contacts'] as List? ?? [];
-
-      log('Body of the request: $body');
+ final logger = context.read<RequestLogger>();
+  logger.debug('Body of the request: $body');
+      
 
       String nameOfSender = '';
       if (contacts.isNotEmpty) {
