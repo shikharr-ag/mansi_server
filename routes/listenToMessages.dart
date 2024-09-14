@@ -28,34 +28,57 @@ Future<Response> onRequest(RequestContext context) async {
       }
     case 'POST':
       final body = jsonDecode(await request.body()) as Map<String, dynamic>;
-      final valueMap = body['value'] as Map<String, dynamic>? ?? {};
-      final contacts = valueMap['contacts'] as List? ?? [];
- final logger = context.read<RequestLogger>();
-  logger.debug('Body of the request: $body');
-      
+      final entries = body['entry'] as List? ?? [];
+      final logger = context.read<RequestLogger>();
+      if (entries.isEmpty) {
+        logger
+            .info('No Entries..\n\nThe Body of incoming message was $body\n\n');
+        return Response(statusCode: 400, body: 'No Entries');
+      } else {
+        final changesList = entries.first['changes'] as List? ?? [];
+        if (changesList.isEmpty) {
+          logger.info(
+              'No Changes.\n\nThe body of incoming message was $body\n\n');
+          return Response(body: 'No Changes', statusCode: 400);
+        } else {
+          final msgBody = changesList.first as Map<String, dynamic>;
+          final valueMap = msgBody['value'] as Map<String, dynamic>? ?? {};
+          final contacts = valueMap['contacts'] as List? ?? [];
 
-      String nameOfSender = '';
-      if (contacts.isNotEmpty) {
-        final profileDetails =
-            contacts.first['profile'] as Map<String, dynamic>? ?? {};
-        nameOfSender = (profileDetails['name'] ?? 'NA').toString();
+          String nameOfSender = '';
+          if (contacts.isNotEmpty) {
+            final profileDetails =
+                contacts.first['profile'] as Map<String, dynamic>? ?? {};
+            nameOfSender = (profileDetails['name'] ?? 'NA').toString();
+          }
+          final messages = valueMap['messages'] as List? ?? [];
+          String messageFrom = '';
+          String messageBody = '';
+          if (messages.isNotEmpty) {
+            messageFrom = (messages.first['from'] ?? 'NA').toString();
+            messageBody = (messages.first['text']['body'] ?? 'NA').toString();
+          }
+          logger.info(
+              '\nBody of the message is $messageBody\n\nSender of the message is $messageFrom\n\n');
+
+          String responseText = await replyToUser(
+            nameOfSender,
+            messageBody,
+            logger: logger,
+          );
+          return Response(body: 'Mansi responded with $responseText');
+        }
       }
-      final messages = valueMap['messages'] as List? ?? [];
-      String messageFrom = '';
-      String messageBody = '';
-      if (messages.isNotEmpty) {
-        messageFrom = (messages.first['from'] ?? 'NA').toString();
-        messageBody = (messages.first['text']['body'] ?? 'NA').toString();
-      }
-      // String responseText = await replyToUser(nameOfSender, messageBody);
-      return Response(body: 'Sending $body to Mansi');
+
     default:
       return Response(body: 'Invalid Method');
   }
 }
 
-Future<String> replyToUser(String name, String messageBody) async {
+Future<String> replyToUser(String name, String messageBody,
+    {required RequestLogger logger}) async {
   try {
+    logger.debug('\nMessage sent to Mansi for processing');
     final messageSendEndpoint =
         Uri.parse('https://graph.facebook.com/v20.0/390332304171825/messages');
     final mansiEndpoint =
@@ -77,12 +100,13 @@ Future<String> replyToUser(String name, String messageBody) async {
         'Content-Type': 'application/json',
       },
     );
-
+    final bearer =
+        'EAAHoI1o82mEBO4XLgCIHOtFUNthQJU6ZBGmWKBeXacU0kGemeFTXevbaiJZCfCPCqlXTzsnbXnem20hysfStJfHPRYFeTBH4dJIa5RH9k2qK3XGjuC2E4SgHZCJGOIOLkFmBBzyot1SrKClFqJu28XcteO0GB1oC9kAxbcDukLCabkp2gWzvZBPUEZCfTucm11dYfpk6flNX7me98GMEAVpbX2QrZAlht47s8ZD';
     final response = await http.post(
       messageSendEndpoint,
       headers: {
         'Authorization':
-            'Bearer EAAHoI1o82mEBOZB8cUCFU6HYy4NReByjI1f3YMuFBP4qPpa7P9rvZBDlB1Gkb5s2NocuBjQyVcgeJB99WXcdG9e4JFxpglnYAkDLP1HB6UwoUrDPt7Kr0r7AXCaMHxEs8pV5WU093CZAsnVKGF7VVwlWGBJ0ooc0CL19qbIA1vgZCasnY6CZBpH6TjeJ8XN2XqftYrrehj7Q2qZCun8NwbRQkoFblbXa3ZBAP4ZD',
+            'Bearer $bearer',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
@@ -99,6 +123,7 @@ Future<String> replyToUser(String name, String messageBody) async {
     );
     return response.body;
   } catch (er) {
+    logger.error('\n\nError while getting response from Mansi: $er\n\n');
     return 'Caught Er: $er';
   }
 }
