@@ -61,11 +61,11 @@ Future<Response> onRequest(RequestContext context) async {
           logger.info(
               '\nBody of the message is $messageBody\n\nSender of the message is $messageFrom\n\n');
 
-          // String responseText = await replyToUser(
-          //   nameOfSender,
-          //   messageBody,
-          //   logger: logger,
-          // );
+          String responseText = await replyToUser(
+            nameOfSender,
+            messageBody,
+            logger: logger,
+          );
           return Response(body: 'Mansi responded');
         }
       }
@@ -78,7 +78,7 @@ Future<Response> onRequest(RequestContext context) async {
 Future<String> replyToUser(String name, String messageBody,
     {required RequestLogger logger}) async {
   try {
-    logger.debug('\nMessage sent to Mansi for processing');
+    logger.debug('\n\nMessage sent to Mansi for processing\n\n');
     final messageSendEndpoint =
         Uri.parse('https://graph.facebook.com/v20.0/390332304171825/messages');
     final mansiEndpoint =
@@ -99,9 +99,14 @@ Future<String> replyToUser(String name, String messageBody,
       headers: {
         'Content-Type': 'application/json',
       },
-    );
+    ).catchError((er) {
+      logger.error('\n\nCaught Error in Mansi Response => $er');
+      return Future(() => http.Response("{'answer': 'error'}", 200));
+    });
+    logger.debug('\n\nMansi Response is: ${mansiResponse.body}\n\n');
     final bearer =
         'EAAHoI1o82mEBO4XLgCIHOtFUNthQJU6ZBGmWKBeXacU0kGemeFTXevbaiJZCfCPCqlXTzsnbXnem20hysfStJfHPRYFeTBH4dJIa5RH9k2qK3XGjuC2E4SgHZCJGOIOLkFmBBzyot1SrKClFqJu28XcteO0GB1oC9kAxbcDukLCabkp2gWzvZBPUEZCfTucm11dYfpk6flNX7me98GMEAVpbX2QrZAlht47s8ZD';
+    logger.debug('\n\nSending message to user..\n\n');
     final response = await http.post(
       messageSendEndpoint,
       headers: {
