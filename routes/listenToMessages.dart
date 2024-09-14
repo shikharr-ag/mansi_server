@@ -11,7 +11,7 @@ Future<Response> onRequest(RequestContext context) async {
   final request = context.request;
 
   final method = request.method.value;
-
+  final logger = context.read<RequestLogger>();
   switch (method) {
     case 'GET':
       final params = request.uri.queryParameters;
@@ -22,6 +22,7 @@ Future<Response> onRequest(RequestContext context) async {
       final hubChallenge = params['hub.challenge'] ?? 'NA';
       // return Response(body: 'Params are $params');
       if (hubVerifyToken == kVerificationToken) {
+        logger.info('Verified Token..');
         return Response(body: hubChallenge);
       } else {
         return Response(statusCode: 400, body: 'Invalid Verification Token');
@@ -29,7 +30,7 @@ Future<Response> onRequest(RequestContext context) async {
     case 'POST':
       final body = jsonDecode(await request.body()) as Map<String, dynamic>;
       final entries = body['entry'] as List? ?? [];
-      final logger = context.read<RequestLogger>();
+
       if (entries.isEmpty) {
         logger
             .info('No Entries..\n\nThe Body of incoming message was $body\n\n');
@@ -80,6 +81,9 @@ void replyToUser(String name, String messageBody,
     {required RequestLogger logger}) {
   try {
     logger.debug('\n\nMessage sent to Mansi for processing\n\n');
+    // Future.delayed(Duration(seconds: 5)).then((_) {
+    //   logger.debug('\n\nBG Task done\n\n');
+    // });
     final messageSendEndpoint =
         Uri.parse('https://graph.facebook.com/v20.0/390332304171825/messages');
     final mansiEndpoint =
@@ -105,8 +109,8 @@ void replyToUser(String name, String messageBody,
       return Future(() => http.Response("{'answer': 'error'}", 200));
     }).then((resp) {
       logger.debug('\n\nMansi Response is: ${resp.body}\n\n');
-      final bearer =
-          'EAAHoI1o82mEBO4XLgCIHOtFUNthQJU6ZBGmWKBeXacU0kGemeFTXevbaiJZCfCPCqlXTzsnbXnem20hysfStJfHPRYFeTBH4dJIa5RH9k2qK3XGjuC2E4SgHZCJGOIOLkFmBBzyot1SrKClFqJu28XcteO0GB1oC9kAxbcDukLCabkp2gWzvZBPUEZCfTucm11dYfpk6flNX7me98GMEAVpbX2QrZAlht47s8ZD';
+      const bearer =
+          'EAAHoI1o82mEBOZBfkQETwFRHct3oKhZCf5HLVLjG852cSZAZA5s8kgOGV8t6oZBecMvNQAUsgTqGJxNDd6NPwPdZAGH5YCnv4ZCJJHiKZAT0dz4brUupBpuvZC9PVCwxeduVxhaQtMG0hjUqDRbUPcWoiVoDqr529PAi4pHtZAfLPpoKZBHZAfohgb3CqTrdxE3aw0OJ9dFo8PHQ5ZB7a8KK4k26FnQ4tPSqql54fbk8ZD';
       logger.debug('\n\nSending message to user..\n\n');
       http.post(
         messageSendEndpoint,
@@ -121,7 +125,8 @@ void replyToUser(String name, String messageBody,
           'type': 'text',
           'text': {
             'preview_url': false,
-            'body': jsonDecode(resp.body)['answer'] ?? 'No Response from Mansi',
+            'body':
+                jsonDecode(resp.body)['response'] ?? 'No Response from Mansi',
           },
         }),
       );
