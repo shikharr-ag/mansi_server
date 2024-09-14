@@ -61,12 +61,13 @@ Future<Response> onRequest(RequestContext context) async {
           logger.info(
               '\nBody of the message is $messageBody\n\nSender of the message is $messageFrom\n\n');
 
-          String responseText = await replyToUser(
+          replyToUser(
             nameOfSender,
             messageBody,
             logger: logger,
           );
-          return Response(body: 'Mansi responded');
+          logger.info('\n\nSending response 200 to Meta..\n\n');
+          return Response(body: 'Mansi will respond');
         }
       }
 
@@ -75,15 +76,15 @@ Future<Response> onRequest(RequestContext context) async {
   }
 }
 
-Future<String> replyToUser(String name, String messageBody,
-    {required RequestLogger logger}) async {
+void replyToUser(String name, String messageBody,
+    {required RequestLogger logger}) {
   try {
     logger.debug('\n\nMessage sent to Mansi for processing\n\n');
     final messageSendEndpoint =
         Uri.parse('https://graph.facebook.com/v20.0/390332304171825/messages');
     final mansiEndpoint =
         Uri.parse('https://whxmgbtb-8000.inc1.devtunnels.ms/query');
-    final mansiResponse = await http.post(
+    http.post(
       mansiEndpoint,
       body: jsonEncode({
         'query': messageBody,
@@ -102,32 +103,30 @@ Future<String> replyToUser(String name, String messageBody,
     ).catchError((er) {
       logger.error('\n\nCaught Error in Mansi Response => $er');
       return Future(() => http.Response("{'answer': 'error'}", 200));
-    });
-    logger.debug('\n\nMansi Response is: ${mansiResponse.body}\n\n');
-    final bearer =
-        'EAAHoI1o82mEBO4XLgCIHOtFUNthQJU6ZBGmWKBeXacU0kGemeFTXevbaiJZCfCPCqlXTzsnbXnem20hysfStJfHPRYFeTBH4dJIa5RH9k2qK3XGjuC2E4SgHZCJGOIOLkFmBBzyot1SrKClFqJu28XcteO0GB1oC9kAxbcDukLCabkp2gWzvZBPUEZCfTucm11dYfpk6flNX7me98GMEAVpbX2QrZAlht47s8ZD';
-    logger.debug('\n\nSending message to user..\n\n');
-    final response = await http.post(
-      messageSendEndpoint,
-      headers: {
-        'Authorization': 'Bearer $bearer',
-        'Content-Type': 'application/json'
-      },
-      body: jsonEncode({
-        'messaging_product': 'whatsapp',
-        'recipient_type': 'individual',
-        'to': '+916200052309',
-        'type': 'text',
-        'text': {
-          'preview_url': false,
-          'body': jsonDecode(mansiResponse.body)['answer'] ??
-              'No Response from Mansi',
+    }).then((resp) {
+      logger.debug('\n\nMansi Response is: ${resp.body}\n\n');
+      final bearer =
+          'EAAHoI1o82mEBO4XLgCIHOtFUNthQJU6ZBGmWKBeXacU0kGemeFTXevbaiJZCfCPCqlXTzsnbXnem20hysfStJfHPRYFeTBH4dJIa5RH9k2qK3XGjuC2E4SgHZCJGOIOLkFmBBzyot1SrKClFqJu28XcteO0GB1oC9kAxbcDukLCabkp2gWzvZBPUEZCfTucm11dYfpk6flNX7me98GMEAVpbX2QrZAlht47s8ZD';
+      logger.debug('\n\nSending message to user..\n\n');
+      http.post(
+        messageSendEndpoint,
+        headers: {
+          'Authorization': 'Bearer $bearer',
+          'Content-Type': 'application/json'
         },
-      }),
-    );
-    return response.body;
+        body: jsonEncode({
+          'messaging_product': 'whatsapp',
+          'recipient_type': 'individual',
+          'to': '+916200052309',
+          'type': 'text',
+          'text': {
+            'preview_url': false,
+            'body': jsonDecode(resp.body)['answer'] ?? 'No Response from Mansi',
+          },
+        }),
+      );
+    });
   } catch (er) {
     logger.error('\n\nError while getting response from Mansi: $er\n\n');
-    return 'Caught Er: $er';
   }
 }
