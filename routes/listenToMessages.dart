@@ -44,7 +44,7 @@ Future<Response> onRequest(RequestContext context) async {
           final msgBody = changesList.first as Map<String, dynamic>;
           final valueMap = msgBody['value'] as Map<String, dynamic>? ?? {};
           final contacts = valueMap['contacts'] as List? ?? [];
-
+          logger.info('\n\nMessage Body is: $msgBody\n\n');
           String nameOfSender = '';
           if (contacts.isNotEmpty) {
             final profileDetails =
@@ -61,12 +61,12 @@ Future<Response> onRequest(RequestContext context) async {
           logger.info(
               '\nBody of the message is $messageBody\n\nSender of the message is $messageFrom\n\n');
 
-          String responseText = await replyToUser(
-            nameOfSender,
-            messageBody,
-            logger: logger,
-          );
-          return Response(body: 'Mansi responded with $responseText');
+          // String responseText = await replyToUser(
+          //   nameOfSender,
+          //   messageBody,
+          //   logger: logger,
+          // );
+          return Response(body: 'Mansi responded');
         }
       }
 
@@ -105,8 +105,7 @@ Future<String> replyToUser(String name, String messageBody,
     final response = await http.post(
       messageSendEndpoint,
       headers: {
-        'Authorization':
-            'Bearer $bearer',
+        'Authorization': 'Bearer $bearer',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
