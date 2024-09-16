@@ -1,6 +1,6 @@
 name: mansi_server
 description: A new Dart Frog application
-version: 1.0.14+15
+version: 1.0.16+17
 publish_to: none
 
 environment:
