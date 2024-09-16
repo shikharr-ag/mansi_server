@@ -81,59 +81,78 @@ void replyToUser(String name, String messageBody,
     {required RequestLogger logger}) {
   try {
     logger.debug('\n\nMessage sent to Mansi for processing\n\n');
-    Future.delayed(Duration(seconds: 5)).then((_) {
-      logger.debug('\n\nMessage Processed in BG\n\n');
-    });
-    // final messageSendEndpoint =
-    //     Uri.parse('https://graph.facebook.com/v20.0/390332304171825/messages');
-    // final mansiEndpoint =
-    //     Uri.parse('https://whxmgbtb-8000.inc1.devtunnels.ms/query');
-    // http.post(
-    //   mansiEndpoint,
-    //   body: jsonEncode({
-    //     'query': messageBody,
-    //     'uid': 'RQ2pIEzjVsb3zbKkckms7a3iOnC3',
-    //     'name': name,
-    //     'goal_weight': 70,
-    //     'current_weight': 75,
-    //     'bmi': 24,
-    //     'age': 22,
-    //     'gender': 'male',
-    //     'docid': 'fkTjWRTlT6OmiGihOs9y',
-    //   }),
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    // ).catchError((er) {
+    // Future.delayed(Duration(seconds: 5)).then((_) async{
+    //   logger.debug('\n\nMessage Processed in BG\n\n');
+    // });
+    final messageSendEndpoint =
+        Uri.parse('https://graph.facebook.com/v20.0/390332304171825/messages');
+    final mansiEndpoint =
+        Uri.parse('https://whxmgbtb-8000.inc1.devtunnels.ms/query');
+
+    // .
+    // catchError((er) {
     //   logger.error('\n\nCaught Error in Mansi Response => $er');
     //   return Future(() => http.Response("{'answer': 'error'}", 200));
     // }).then((resp) {
-    //   if (resp.statusCode != 200) {
-    //     logger.error('Something went wrong: return ${resp.statusCode}');
-    //     return;
-    //   }
-    //   logger.debug('\n\nMansi Response is: ${resp.body}\n\n');
+    // if (resp.statusCode != 200) {
+    //   logger.error('Something went wrong: return ${resp.statusCode}');
+    //   return;
+    // }
+    // logger.debug('\n\nMansi Response is: ${resp.body}\n\n');
     // const bearer =
-    //     'EAAHoI1o82mEBOZBfkQETwFRHct3oKhZCf5HLVLjG852cSZAZA5s8kgOGV8t6oZBecMvNQAUsgTqGJxNDd6NPwPdZAGH5YCnv4ZCJJHiKZAT0dz4brUupBpuvZC9PVCwxeduVxhaQtMG0hjUqDRbUPcWoiVoDqr529PAi4pHtZAfLPpoKZBHZAfohgb3CqTrdxE3aw0OJ9dFo8PHQ5ZB7a8KK4k26FnQ4tPSqql54fbk8ZD';
-    // logger.debug('\n\nSending message to user..\n\n');
-    // http.post(
-    //   messageSendEndpoint,
-    //   headers: {
-    //     'Authorization': 'Bearer $bearer',
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: jsonEncode({
-    //     'messaging_product': 'whatsapp',
-    //     'recipient_type': 'individual',
-    //     'to': '+916200052309',
-    //     'type': 'text',
-    //     'text': {
-    //       'preview_url': false,
-    //       'body':
-    //           jsonDecode(resp.body)['response'] ?? 'No Response from Mansi',
-    //     },
-    //   }),
-    // );
+    //     'EAAHoI1o82mEBOw0ZAAdAWmmO0sAhSmfKUKtyF9iXuE5yfbxPMUxPtprwZBv1AanJQx43WcxsKbIVMo3ekONoDTsujt8VwpkEDkvCgXXUetTEVgjelDsGRnTUqYfUDgay5hZBRbhM1oCnZC3hsSsnplZCAOuelMpR4dbdk7mHMkKUWCFCpPKvEodwBACqYGCeIuvD3viBoSOllMZAgJ2XLneHjQAvEtMrduyAlHXA8ZD';
+    logger.debug('\n\nSending message to user..\n\n');
+    Future.sync(() {
+      // http.post(
+      //   mansiEndpoint,
+      //   body: jsonEncode({
+      //     'query': messageBody,
+      //     'uid': 'RQ2pIEzjVsb3zbKkckms7a3iOnC3',
+      //     'name': name,
+      //     'goal_weight': 70,
+      //     'current_weight': 75,
+      //     'bmi': 24,
+      //     'age': 22,
+      //     'gender': 'male',
+      //     'docid': 'fkTjWRTlT6OmiGihOs9y',
+      //   }),
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      // ).then((resp) {
+      //   if (resp.statusCode != 200) {
+      //     logger.error('Something went wrong: return ${resp.statusCode}');
+      //     return;
+      //   }
+      //   logger.debug('\n\nMansi Response is: ${resp.body}\n\n');
+        http
+            .post(
+          messageSendEndpoint,
+          headers: {
+            'Authorization':
+                'Bearer EAAHoI1o82mEBOZCZBtwQxiRKXNsmSmxzucq1aTrW79vKIpZB096FY6Tlv0kvKEue6ITH6NZCAXZBMmuM5idwmbEmDR5c6d43TUAu3vimZC6cNQsGQdyMPTKw9LWFq1nMUZAfsZATbxcZCw8oxrZBe63SUAWcZAUPHxKJWBPYYOyY56eROQVWjqfdXC1BJQAjDPZAZAYQoz8nrT4x7FQ97NQCZAJ7V9PynUyiG7WoZBP3T0ZD',
+            'Content-Type': 'application/json'
+          },
+          body: jsonEncode({
+            'messaging_product': 'whatsapp',
+            'recipient_type': 'individual',
+            'to': '+916200052309',
+            'type': 'text',
+            'text': {
+              'preview_url': false,
+              'body':
+                  // jsonDecode(resp.body)['response'] ?? 'No Response from Mansi',
+                  'responding back..',
+            },
+          }),
+        )
+            .then((resp) {
+          logger.info(
+              'Response after sending message: ${resp.statusCode}\n\n${resp.body}\n\n');
+        });
+      });
+    // });
+
     // });
   } catch (er) {
     logger.error('\n\nError while getting response from Mansi: $er\n\n');
