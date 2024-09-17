@@ -47,11 +47,11 @@ Future<bool> replyToUser(String name, String messageBody,
     //   logger.debug('\n\nVery Long Function Returned Result...\n\n');
     //   return true;
     // });
-    return Future.sync(() {
+    return Future.sync(() async {
       logger.debug('\n\nEntered Future sync..\n\n');
       try {
         logger.debug('\n\nreturn post call to mansi endpoint.\n\n');
-        return http.post(
+        return await http.post(
           mansiEndpoint,
           body: jsonEncode({
             'query': messageBody,
@@ -74,34 +74,34 @@ Future<bool> replyToUser(String name, String messageBody,
             return false;
           }
           logger.info('\n\nMansi Sent A Response as: ${resp.body}\n\n');
-          logger.info('\n\nSending Message via Meta Graph API\n\n');
+          // logger.info('\n\nSending Message via Meta Graph API\n\n');s
 
-          return http
-              .post(
-            messageSendEndpoint,
-            headers: {
-              'Authorization':
-                  'Bearer EAAHoI1o82mEBO52gkdTKC0VbcvubePJ2oZC5czf9wCEWSIZCXUHrUIUmfevll9rd9oFsZC2mVz0sTVAvWB5BJ0OPU2xv0H2XZCE4VN4kTcDsR1DGkZBerEmXDTWmnIfwmMJGAWftLlKUoq4i0x8RJQgAoDhMwq3IwQ1jUxW2ZBDPxQqZCNps6LdVwgGvsZAsZCm4KNqohkYLCJctb4jZAIgMuLHcsjkFgUVJZCp1n9q',
-              'Content-Type': 'application/json'
-            },
-            body: jsonEncode({
-              'messaging_product': 'whatsapp',
-              'recipient_type': 'individual',
-              'to': '+916200052309',
-              'type': 'text',
-              'text': {
-                'preview_url': false,
-                'body': jsonDecode(resp.body)['response'] ??
-                    'No Response from Mansi',
-                // 'responding back..',
-              },
-            }),
-          )
-              .then((resp) {
-            logger.info(
-                'Response after sending message: ${resp.statusCode}\n\n${resp.body}\n\n');
-            return true;
-          });
+          // return http
+          //     .post(
+          //   messageSendEndpoint,
+          //   headers: {
+          //     'Authorization':
+          //         'Bearer EAAHoI1o82mEBO52gkdTKC0VbcvubePJ2oZC5czf9wCEWSIZCXUHrUIUmfevll9rd9oFsZC2mVz0sTVAvWB5BJ0OPU2xv0H2XZCE4VN4kTcDsR1DGkZBerEmXDTWmnIfwmMJGAWftLlKUoq4i0x8RJQgAoDhMwq3IwQ1jUxW2ZBDPxQqZCNps6LdVwgGvsZAsZCm4KNqohkYLCJctb4jZAIgMuLHcsjkFgUVJZCp1n9q',
+          //     'Content-Type': 'application/json'
+          //   },
+          //   body: jsonEncode({
+          //     'messaging_product': 'whatsapp',
+          //     'recipient_type': 'individual',
+          //     'to': '+916200052309',
+          //     'type': 'text',
+          //     'text': {
+          //       'preview_url': false,
+          //       'body': jsonDecode(resp.body)['response'] ??
+          //           'No Response from Mansi',
+          //       // 'responding back..',
+          //     },
+          //   }),
+          // )
+          //     .then((resp) {
+          //   logger.info(
+          //       'Response after sending message: ${resp.statusCode}\n\n${resp.body}\n\n');
+          //   return true;
+          // });
           return true;
         });
       } catch (er) {
