@@ -53,9 +53,12 @@ Handler middleware(Handler handler) {
             logger.info(
                 '\nBody of the message is $messageBody\n\nSender of the message is $messageFrom\n\n');
             logger.info('\n\nForwarding for Processing\n\n');
+
             unawaited(http.post(
                 Uri.parse(
-                    'https://mansi-server.globeapp.dev/processAndSendMessage'),
+                    'https://mansi-server.globeapp.dev/processAndSendMessage'
+                    // 'http://localhost:8080/processAndSendMessage',
+                    ),
                 body: jsonEncode({'body': messageBody, 'from': messageFrom})));
           }
 
