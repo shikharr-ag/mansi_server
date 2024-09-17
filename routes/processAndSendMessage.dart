@@ -51,7 +51,7 @@ Future<bool> replyToUser(String name, String messageBody,
       try {
         logger.debug('\n\nreturn post call to mansi endpoint.\n\n');
         return await http
-            .get(
+            .post(
           mansiEndpoint,
           // body: jsonEncode({
           //   'query': messageBody,
