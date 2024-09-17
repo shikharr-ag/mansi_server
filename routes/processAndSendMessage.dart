@@ -40,7 +40,7 @@ Future<bool> replyToUser(String name, String messageBody,
     // });
     final messageSendEndpoint =
         Uri.parse('https://graph.facebook.com/v20.0/390332304171825/messages');
-    final mansiEndpoint = Uri.parse('https://whxmgbtb-3000.inc1.devtunnels.ms');
+    final mansiEndpoint = Uri.parse('https://ping-mansiai.vercel.app');
     logger.debug('\n\nEndpoints Declared...\n\n');
     // return Future.delayed(Duration(seconds: 50)).then((_) {
     //   logger.debug('\n\nVery Long Function Returned Result...\n\n');
