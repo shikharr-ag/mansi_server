@@ -26,33 +26,42 @@ Handler middleware(Handler handler) {
         final msgBody = changesList.first as Map<String, dynamic>;
         final valueMap = msgBody['value'] as Map<String, dynamic>? ?? {};
         final contacts = valueMap['contacts'] as List? ?? [];
-        logger.info('\n\nMessage Body is: $msgBody\n\n');
-        String nameOfSender = '';
-        if (contacts.isNotEmpty) {
-          final profileDetails =
-              contacts.first['profile'] as Map<String, dynamic>? ?? {};
-          nameOfSender = (profileDetails['name'] ?? 'NA').toString();
+        final statuses = valueMap['statuses'] as List? ?? [];
+
+        if (statuses.isNotEmpty) {
+          final status = statuses.first['status'] ?? 'NA';
+          logger.info(
+              '\n\nStatus of the message is $status\nSkipping sending message...\n\n');
+        } else {
+          logger.info('\n\nMessage Body is: $msgBody\n\n');
+          String nameOfSender = '';
+          if (contacts.isNotEmpty) {
+            final profileDetails =
+                contacts.first['profile'] as Map<String, dynamic>? ?? {};
+            nameOfSender = (profileDetails['name'] ?? 'NA').toString();
+          }
+          final messages = valueMap['messages'] as List? ?? [];
+          String messageFrom = '';
+          String messageBody = '';
+          if (messages.isNotEmpty) {
+            messageFrom = (messages.first['from'] ?? 'NA').toString();
+            messageBody = (messages.first['text']['body'] ?? 'NA').toString();
+          }
+          logger.info(
+              '\nBody of the message is $messageBody\n\nSender of the message is $messageFrom\n\n');
+
+          // final body = context.request.headers;
+          // final resp2= response.copyWith();
+          // final body = await resp2.json();
+          // final body = jsonDecode(await response.body()) as Map<String, dynamic>;
+
+          // logger.info('\n\nBody of the response is: $body');
+          // logger.info('\nStatus code is ${response.statusCode}\n\n');
+
+          replyToUser(messageFrom, messageBody, logger: logger);
         }
-        final messages = valueMap['messages'] as List? ?? [];
-        String messageFrom = '';
-        String messageBody = '';
-        if (messages.isNotEmpty) {
-          messageFrom = (messages.first['from'] ?? 'NA').toString();
-          messageBody = (messages.first['text']['body'] ?? 'NA').toString();
-        }
-        logger.info(
-            '\nBody of the message is $messageBody\n\nSender of the message is $messageFrom\n\n');
 
         final response = await handler(context);
-        // final body = context.request.headers;
-        // final resp2= response.copyWith();
-        // final body = await resp2.json();
-        // final body = jsonDecode(await response.body()) as Map<String, dynamic>;
-
-        // logger.info('\n\nBody of the response is: $body');
-        // logger.info('\nStatus code is ${response.statusCode}\n\n');
-
-        replyToUser(messageFrom, messageBody, logger: logger);
         return response;
       }
     }
@@ -115,33 +124,32 @@ Future<bool> replyToUser(String name, String messageBody,
         // }
         // logger.debug('\n\nMansi Response is: ${resp.body}\n\n');
 
-        //   return http
-        //       .post(
-        //     messageSendEndpoint,
-        //     headers: {
-        //       'Authorization':
-        //           'Bearer EAAHoI1o82mEBO0Y63xZAVgv2fd6nxYnp25eiY3h4hM9Acl5B0YnhaLCC8PSAoBlOlwqqrUIyWb0VdNNcouUc92Cvv2l9LB88ROysTfr3rQW9EZCVYzV7OGkMEr3hOc3gZCD99Yn6oi8Aghi0Id60ZAQZCEtb70F5DYHWxZA0H1bx3gFkoS7cGqyHprNuKn1HaSPPurD7bzsc6qeMaZBFPQgbUsXZB3ZBPHMVypfcZD',
-        //       'Content-Type': 'application/json'
-        //     },
-        //     body: jsonEncode({
-        //       'messaging_product': 'whatsapp',
-        //       'recipient_type': 'individual',
-        //       'to': '+916200052309',
-        //       'type': 'text',
-        //       'text': {
-        //         'preview_url': false,
-        //         'body':
-        //             // jsonDecode(resp.body)['response'] ?? 'No Response from Mansi',
-        //             'responding back..',
-        //       },
-        //     }),
-        //   )
-        //       .then((resp) {
-        //     logger.info(
-        //         'Response after sending message: ${resp.statusCode}\n\n${resp.body}\n\n');
-        //     return true;
-        //   });
-        return Future.delayed(Duration(seconds: 3));
+        return http
+            .post(
+          messageSendEndpoint,
+          headers: {
+            'Authorization':
+                'Bearer EAAHoI1o82mEBO1MFhvSgHMZAnZAykgasTHHJLtyjeS7vLUV4h4VqN70DoMLtTceg6iIKMwamSmLd5j78FpjUZAqONh3I2jOqOPIvIVMTzSb2NzZClhIygkkVZCx3mH6F8g8qUHkGEDhMJL4W2XA7tMg0qBxYWMZCawrBfW1ZBPyhPu5mvsJtosBDlR44skin2uTcJ6gbJ53HlnQTzdsQwHJAcUcl0Bm3MKnKZBQZD',
+            'Content-Type': 'application/json'
+          },
+          body: jsonEncode({
+            'messaging_product': 'whatsapp',
+            'recipient_type': 'individual',
+            'to': '+916200052309',
+            'type': 'text',
+            'text': {
+              'preview_url': false,
+              'body':
+                  // jsonDecode(resp.body)['response'] ?? 'No Response from Mansi',
+                  'responding back..',
+            },
+          }),
+        )
+            .then((resp) {
+          logger.info(
+              'Response after sending message: ${resp.statusCode}\n\n${resp.body}\n\n');
+          return true;
+        });
       } catch (er) {
         logger.info('\nError in exec future $er\n');
         return false;
