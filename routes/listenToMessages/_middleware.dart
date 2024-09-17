@@ -85,7 +85,7 @@ Future<bool> replyToUser(String name, String messageBody,
         Uri.parse('https://graph.facebook.com/v20.0/390332304171825/messages');
     final mansiEndpoint =
         Uri.parse('https://whxmgbtb-8000.inc1.devtunnels.ms/query');
-
+    logger.debug('\n\nEndpoints Declared...\n\n');
     // .
     // catchError((er) {
     //   logger.error('\n\nCaught Error in Mansi Response => $er');
@@ -100,7 +100,9 @@ Future<bool> replyToUser(String name, String messageBody,
     //     'EAAHoI1o82mEBOw0ZAAdAWmmO0sAhSmfKUKtyF9iXuE5yfbxPMUxPtprwZBv1AanJQx43WcxsKbIVMo3ekONoDTsujt8VwpkEDkvCgXXUetTEVgjelDsGRnTUqYfUDgay5hZBRbhM1oCnZC3hsSsnplZCAOuelMpR4dbdk7mHMkKUWCFCpPKvEodwBACqYGCeIuvD3viBoSOllMZAgJ2XLneHjQAvEtMrduyAlHXA8ZD';
     // logger.debug('\n\nSending message to user..\n\n');
     return Future.sync(() {
+      logger.debug('\n\nEntered Future sync..\n\n');
       try {
+        logger.debug('\n\nreturn post call to masni endpoint.\n\n');
         return http.post(
           mansiEndpoint,
           body: jsonEncode({
@@ -119,9 +121,12 @@ Future<bool> replyToUser(String name, String messageBody,
           },
         ).then((resp) {
           if (resp.statusCode != 200) {
-            logger.error('Something went wrong: return ${resp.statusCode}');
+            logger.error(
+                'Something went wrong at Mansi Endpoint return ${resp.statusCode}');
+            return false;
           }
-          logger.debug('\n\nMansi Response is: ${resp.body}\n\n');
+          logger.info('\n\nMansi Sent A Response as: ${resp.body}\n\n');
+          logger.info('\n\nSending Message via Meta Graph API\n\n');
 
           return http
               .post(
@@ -138,9 +143,9 @@ Future<bool> replyToUser(String name, String messageBody,
               'type': 'text',
               'text': {
                 'preview_url': false,
-                'body':
-                    jsonDecode(resp.body)['response'] ?? 'No Response from Mansi',
-                    // 'responding back..',
+                'body': jsonDecode(resp.body)['response'] ??
+                    'No Response from Mansi',
+                // 'responding back..',
               },
             }),
           )

@@ -63,7 +63,7 @@ Future<Response> onRequest(RequestContext context) async {
         //   logger.info(
         //       '\nBody of the message is $messageBody\n\nSender of the message is $messageFrom\n\n');
 
-        //   logger.info('\n\nSending response 200 to Meta..\n\n');
+        logger.info('\n\nSending response 200 to Meta..\n\n');
         return Response(
           body: 'Msg Rx and Processing Started..',
         );
