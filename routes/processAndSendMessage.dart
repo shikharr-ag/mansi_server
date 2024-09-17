@@ -28,25 +28,13 @@ Future<Response> onRequest(RequestContext context) async {
 Future<bool> replyToUser(String name, String messageBody,
     {required RequestLogger logger}) {
   try {
-    // return Future.delayed(
-    //   Duration(seconds: 3),
-    // ).then((_) {
-    //   logger.info('\nMESSAGE SENT!\n');
-    //   return true;
-    // });
     logger.debug('\n\nMessage sent to Mansi for processing\n\n');
-    // Future.delayed(Duration(seconds: 5)).then((_) async{
-    //   logger.debug('\n\nMessage Processed in BG\n\n');
-    // });
+
     final messageSendEndpoint =
         Uri.parse('https://graph.facebook.com/v20.0/390332304171825/messages');
     final mansiEndpoint = Uri.parse(
         'https://github-model-171951671217.us-central1.run.app/query');
     logger.debug('\n\nEndpoints Declared...\n\n');
-    // return Future.delayed(Duration(seconds: 50)).then((_) {
-    //   logger.debug('\n\nVery Long Function Returned Result...\n\n');
-    //   return true;
-    // });
     return Future.sync(() async {
       logger.debug('\n\nEntered Future sync..\n\n');
       try {
@@ -74,35 +62,35 @@ Future<bool> replyToUser(String name, String messageBody,
             return false;
           }
           logger.info('\n\nMansi Sent A Response as: ${resp.body}\n\n');
-          // logger.info('\n\nSending Message via Meta Graph API\n\n');s
+          logger.info('\n\nSending Message via Meta Graph API\n\n');
 
-          // return http
-          //     .post(
-          //   messageSendEndpoint,
-          //   headers: {
-          //     'Authorization':
-          //         'Bearer EAAHoI1o82mEBO52gkdTKC0VbcvubePJ2oZC5czf9wCEWSIZCXUHrUIUmfevll9rd9oFsZC2mVz0sTVAvWB5BJ0OPU2xv0H2XZCE4VN4kTcDsR1DGkZBerEmXDTWmnIfwmMJGAWftLlKUoq4i0x8RJQgAoDhMwq3IwQ1jUxW2ZBDPxQqZCNps6LdVwgGvsZAsZCm4KNqohkYLCJctb4jZAIgMuLHcsjkFgUVJZCp1n9q',
-          //     'Content-Type': 'application/json'
-          //   },
-          //   body: jsonEncode({
-          //     'messaging_product': 'whatsapp',
-          //     'recipient_type': 'individual',
-          //     'to': '+916200052309',
-          //     'type': 'text',
-          //     'text': {
-          //       'preview_url': false,
-          //       'body': jsonDecode(resp.body)['response'] ??
-          //           'No Response from Mansi',
-          //       // 'responding back..',
-          //     },
-          //   }),
-          // )
-          //     .then((resp) {
-          //   logger.info(
-          //       'Response after sending message: ${resp.statusCode}\n\n${resp.body}\n\n');
-          //   return true;
-          // });
-          return true;
+          return http
+              .post(
+            messageSendEndpoint,
+            headers: {
+              'Authorization':
+                  'Bearer EAAHoI1o82mEBOwXTkGYQILceptL3icx0UMoZCD2yx3lhzdu51c7pYcZBOws5xKyXYHQ8ZAMSQ1hZBx3hGoATV0OFtnZCYN314OtYWcz8d2sje50sMsMfKtn44v5jLDkZAIVjYrRYgZBL5kI0t7WkqZCRh02Ebhr11GiFHqEKZBfOvkfvfXxMTO6uRUnwbD2h2aginBBx48N7TslF6hvcJQZCnyHunzdLGrv8tOaYsZD',
+              'Content-Type': 'application/json'
+            },
+            body: jsonEncode({
+              'messaging_product': 'whatsapp',
+              'recipient_type': 'individual',
+              'to': '+916200052309',
+              'type': 'text',
+              'text': {
+                'preview_url': false,
+                'body': jsonDecode(resp.body)['response'] ??
+                    'No Response from Mansi',
+                // 'responding back..',
+              },
+            }),
+          )
+              .then((resp) {
+            logger.info(
+                'Response after sending message: ${resp.statusCode}\n\n${resp.body}\n\n');
+            return true;
+          });
+          // return true;
         });
       } catch (er) {
         logger.info('\nError in exec future $er\n');
