@@ -100,59 +100,62 @@ Future<bool> replyToUser(String name, String messageBody,
     return Future.sync(() {
       logger.debug('\n\nEntered Future sync..\n\n');
       try {
-        logger.debug('\n\nreturn post call to masni endpoint.\n\n');
-        return http.post(
-          mansiEndpoint,
-          body: jsonEncode({
-            'query': messageBody,
-            'uid': 'RQ2pIEzjVsb3zbKkckms7a3iOnC3',
-            'name': name,
-            'goal_weight': 70,
-            'current_weight': 75,
-            'bmi': 24,
-            'age': 22,
-            'gender': 'male',
-            'docid': 'fkTjWRTlT6OmiGihOs9y',
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        ).then((resp) {
-          if (resp.statusCode != 200) {
-            logger.error(
-                'Something went wrong at Mansi Endpoint return ${resp.statusCode}');
-            return false;
-          }
-          logger.info('\n\nMansi Sent A Response as: ${resp.body}\n\n');
-          logger.info('\n\nSending Message via Meta Graph API\n\n');
+        // logger.debug('\n\nreturn post call to masni endpoint.\n\n');
+        // return
 
-          return http
-              .post(
-            messageSendEndpoint,
-            headers: {
-              'Authorization':
-                  'Bearer EAAHoI1o82mEBO1MFhvSgHMZAnZAykgasTHHJLtyjeS7vLUV4h4VqN70DoMLtTceg6iIKMwamSmLd5j78FpjUZAqONh3I2jOqOPIvIVMTzSb2NzZClhIygkkVZCx3mH6F8g8qUHkGEDhMJL4W2XA7tMg0qBxYWMZCawrBfW1ZBPyhPu5mvsJtosBDlR44skin2uTcJ6gbJ53HlnQTzdsQwHJAcUcl0Bm3MKnKZBQZD',
-              'Content-Type': 'application/json'
+        // http.post(
+        //   mansiEndpoint,
+        //   body: jsonEncode({
+        //     'query': messageBody,
+        //     'uid': 'RQ2pIEzjVsb3zbKkckms7a3iOnC3',
+        //     'name': name,
+        //     'goal_weight': 70,
+        //     'current_weight': 75,
+        //     'bmi': 24,
+        //     'age': 22,
+        //     'gender': 'male',
+        //     'docid': 'fkTjWRTlT6OmiGihOs9y',
+        //   }),
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        // ).then((resp) {
+        // if (resp.statusCode != 200) {
+        //   logger.error(
+        //       'Something went wrong at Mansi Endpoint return ${resp.statusCode}');
+        //   return false;
+        // }
+        // logger.info('\n\nMansi Sent A Response as: ${resp.body}\n\n');
+        logger.info('\n\nSending Message via Meta Graph API\n\n');
+
+        return http
+            .post(
+          messageSendEndpoint,
+          headers: {
+            'Authorization':
+                'Bearer EAAHoI1o82mEBO1MFhvSgHMZAnZAykgasTHHJLtyjeS7vLUV4h4VqN70DoMLtTceg6iIKMwamSmLd5j78FpjUZAqONh3I2jOqOPIvIVMTzSb2NzZClhIygkkVZCx3mH6F8g8qUHkGEDhMJL4W2XA7tMg0qBxYWMZCawrBfW1ZBPyhPu5mvsJtosBDlR44skin2uTcJ6gbJ53HlnQTzdsQwHJAcUcl0Bm3MKnKZBQZD',
+            'Content-Type': 'application/json'
+          },
+          body: jsonEncode({
+            'messaging_product': 'whatsapp',
+            'recipient_type': 'individual',
+            'to': '+916200052309',
+            'type': 'text',
+            'text': {
+              'preview_url': false,
+              'body':
+                  //  jsonDecode(resp.body)['response'] ??
+                  //     'No Response from Mansi',
+                  'responding back..',
             },
-            body: jsonEncode({
-              'messaging_product': 'whatsapp',
-              'recipient_type': 'individual',
-              'to': '+916200052309',
-              'type': 'text',
-              'text': {
-                'preview_url': false,
-                'body': jsonDecode(resp.body)['response'] ??
-                    'No Response from Mansi',
-                // 'responding back..',
-              },
-            }),
-          )
-              .then((resp) {
-            logger.info(
-                'Response after sending message: ${resp.statusCode}\n\n${resp.body}\n\n');
-            return true;
-          });
+          }),
+        )
+            .then((resp) {
+          logger.info(
+              'Response after sending message: ${resp.statusCode}\n\n${resp.body}\n\n');
+          return true;
         });
+        // });
       } catch (er) {
         logger.info('\nError in exec future $er\n');
         return false;
