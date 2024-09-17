@@ -40,8 +40,7 @@ Future<bool> replyToUser(String name, String messageBody,
     // });
     final messageSendEndpoint =
         Uri.parse('https://graph.facebook.com/v20.0/390332304171825/messages');
-    final mansiEndpoint =
-        Uri.parse('https://whxmgbtb-8000.inc1.devtunnels.ms/query');
+    final mansiEndpoint = Uri.parse('https://whxmgbtb-3000.inc1.devtunnels.ms');
     logger.debug('\n\nEndpoints Declared...\n\n');
     // return Future.delayed(Duration(seconds: 50)).then((_) {
     //   logger.debug('\n\nVery Long Function Returned Result...\n\n');
@@ -51,23 +50,25 @@ Future<bool> replyToUser(String name, String messageBody,
       logger.debug('\n\nEntered Future sync..\n\n');
       try {
         logger.debug('\n\nreturn post call to mansi endpoint.\n\n');
-        return await http.post(
+        return await http
+            .get(
           mansiEndpoint,
-          body: jsonEncode({
-            'query': messageBody,
-            'uid': 'RQ2pIEzjVsb3zbKkckms7a3iOnC3',
-            'name': name,
-            'goal_weight': 70,
-            'current_weight': 75,
-            'bmi': 24,
-            'age': 22,
-            'gender': 'male',
-            'docid': 'fkTjWRTlT6OmiGihOs9y',
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        ).then((resp) {
+          // body: jsonEncode({
+          //   'query': messageBody,
+          //   'uid': 'RQ2pIEzjVsb3zbKkckms7a3iOnC3',
+          //   'name': name,
+          //   'goal_weight': 70,
+          //   'current_weight': 75,
+          //   'bmi': 24,
+          //   'age': 22,
+          //   'gender': 'male',
+          //   'docid': 'fkTjWRTlT6OmiGihOs9y',
+          // }),
+          // headers: {
+          //   'Content-Type': 'application/json',
+          // },
+        )
+            .then((resp) {
           if (resp.statusCode != 200) {
             logger.error(
                 'Something went wrong at Mansi Endpoint return ${resp.statusCode}');
